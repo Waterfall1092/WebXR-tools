@@ -159,6 +159,7 @@ input[type=text]{
   float:left;
   margin:10px;
   max-width:500px;
+  position: relative;
 }
 
 #menu img{
@@ -173,8 +174,7 @@ input[type=text]{
 }
 
 #menu li:hover{
-  filter:brightness(120%);
-  background-color: #3b75ba;
+  background-color: #3b75ba !important;
 }
 
 #menu li a .title{
@@ -183,6 +183,7 @@ input[type=text]{
   font-size:200%;
   font-weight: bold;
   margin-bottom:5px;
+  border-bottom: 1px solid #3b75ba;
 }
 
 #authors{
@@ -190,4 +191,22 @@ input[type=text]{
   right:20px;
   bottom:20px;
   color:white;
+}
+
+.instructions{
+  position: absolute;
+  right:20px;
+  top:20px;
+  border:#3b75ba 2px solid;
+  width: 40px;
+  height:40px;
+  border-radius: 42px;
+  background-color: #555;
+  font-size:200%;
+  line-height: 40px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif
+}
+
+.instructions:hover{
+  background-color: #4f90df;
 }
