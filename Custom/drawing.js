@@ -1,56 +1,64 @@
+/* 
+    Responsible for adding entities to the scene and updating the json object of the current scene.
+    Can add circle, plane, triangle, checkerboard, grille, or gradient.
+    
+*/
+
 /* adds entity to scene */
 function addEntity(){
+    
     el = document.createElement('a-entity'); /* creates entity */
+
+    /* get random colors */
+    let R = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
+    let G = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
+    let B = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
+    
 
     /* check desired type of entity */
     if($("#entity :selected").text() == "circle"){ /* if circle */
+        /* Set radius*/
         el.setAttribute("id","circle"+circleNum++);
         el.setAttribute("geometry",{primitive: "ring", radiusOuter: 0.125*250, radiusInner: 0});
         el.setAttribute("fill",{val: .125*250, isFull: true});
-        let R = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
-        let G = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
-        let B = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
         el.setAttribute("material", {shader: "flat", color: "#"+R+G+B});
+
     } else if ($("#entity :selected").text() == "plane"){ /* if plane */
         el.setAttribute("id","plane"+planeNum++);
         el.setAttribute("geometry",{primitive: "plane", width: .125*250, height: .25*250});
         el.setAttribute("fill",{val: .125*250, isFull: true});
-        let R = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
-        let G = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
-        let B = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
         el.setAttribute("material", {shader: "flat", color: "#"+R+G+B});
     } else if ($("#entity :selected").text() == "triangle"){ /* if triangle */
         el.setAttribute("id","triangle"+triangleNum++);
         el.setAttribute("geometry",{primitive: "triangle", vertexA: {x: 0, y: 0.1875*125, z: 0}, vertexB: {x: -0.25*125, y: -0.25*125, z: 0}, vertexC: {x: 0.25*125, y: -0.25*125, z: 0}});
-        let R = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
-        let G = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
-        let B = ((Math.floor(Math.random()*255).toString(16)).toUpperCase()).padStart(2, '0');
         el.setAttribute("material", {shader: "flat", color: "#"+R+G+B});
     } else if ($("#entity :selected").text() == "gradient"){
         el.setAttribute("id","gradient"+gradientNum++);
-        drawGradient(.025*250,.075*250,32,{r: 255, g: 255, b: 255},el);
-        el.setAttribute("material",{shader: "flat", color: "#FFFFFF"});
+        drawGradient(.025*250,.075*250,32,hexToRgb("#"+R+G+B),hexToRgb("#000000"),el);
+        el.setAttribute("material",{shader: "flat", color: "#"+R+G+B});
+        el.setAttribute("color2",{val: "#000000"})
     } else if ($("#entity :selected").text() == "checkerboard"){
         el.setAttribute("id","checkerboard"+checkerboardNum++);
-        drawCheckerboard(16,16,.02*250,{r: 255, g: 255, b: 255},el);
-        el.setAttribute("material",{shader: "flat", color: "#FFFFFF"});
+        drawCheckerboard(16,16,.02*250,"#"+R+G+B,"#000000",el);
+        el.setAttribute("material",{shader: "flat", color: "#"+R+G+B});
+        el.setAttribute("color2",{val: "#000000"})
     } else if ($("#entity :selected").text() == "grille"){
         el.setAttribute("id","grille"+grilleNum++);
-        drawGrille(.025*250,.125*250,32,{r: 255, g: 255, b: 255},el);
-        el.setAttribute("material",{shader: "flat", color: "#FFFFFF"});
+        drawGrille(.025*250,.125*250,32,"#"+R+G+B,"#000000",el);
+        el.setAttribute("material",{shader: "flat", color: "#"+R+G+B});
+        el.setAttribute("color2",{val: "#000000"})
     }
     /* Set default universal stats */
 
-    numAdded++;
-    el.setAttribute("click-checker","");
-    let THETAX = Math.random() * 110 -55;
-    let Y = Math.random() * 30 - 15;
-    el.setAttribute("position",{x: -250 * Math.sin((THETAX*Math.PI)/180), y: Y, z: -250 * Math.cos((THETAX*Math.PI)/180)});
-    el.setAttribute("rotation", {x: 0, y: THETAX, z: 0});
+    numAdded++; // number of elements added
+    el.setAttribute("click-checker",""); // listener for click
+    el.setAttribute("advanced",{val: false}); // advanced mode indicator
+    let THETAX = Math.random() * 110 -55; // random x position
+    let Y = Math.random() * 30 - 15; // random y position
+    el.setAttribute("position",{x: -250 * Math.sin((THETAX*Math.PI)/180), y: Y, z: -250 * Math.cos((THETAX*Math.PI)/180)}); // set position to random x, random y, distance = 250
+    el.setAttribute("rotation", {x: 0, y: THETAX, z: 0}); // set rotation to be 0
+    el.setAttribute("angle",{x: THETAX, z: -250}); // set angular units to be random x and 250
     
-    el.setAttribute("angle",{x: THETAX});
-    
-
     entityCanvas.appendChild(el); /* add entity to scene */
 
     /* add entity to potential selections */
@@ -58,61 +66,95 @@ function addEntity(){
     option.text = el.getAttribute("id");
     entitySelector.add(option);
 
-    els.push(el);/* add entity to list of created entities */
+    /* add entity to list of created entities */
+    els.push(el);
     pool.push(el.object3D);
+
+    updateJSON(); // update JSON of current scene
 }
 
+/* draws hollow plane */
 function drawPlaneBorder(width,height,fill,color,parent){
 
         let newWidth = fill/2;
         let newHeight = fill/2;
 
+        /* Creates 4 new planes that will represent each side of the plane */
         vertL = document.createElement('a-entity');
         vertR = document.createElement('a-entity');
         horizU = document.createElement('a-entity');
         horizD = document.createElement('a-entity');
 
+        /* Sets them to desired size */
         vertL.setAttribute("geometry",{primitive: "plane", width: newWidth, height: height});
         vertR.setAttribute("geometry",{primitive: "plane", width: newWidth, height: height});
         horizU.setAttribute("geometry",{primitive: "plane", width: width, height: newHeight});
         horizD.setAttribute("geometry",{primitive: "plane", width: width, height: newHeight});
         
+        /* Sets position with very slight forward offset */
         vertL.setAttribute("position",{x: (-1*width/2)+(newWidth/2), y: 0, z: -0.00001});
         vertR.setAttribute("position",{x: (width/2)-(newWidth/2), y: 0, z: -0.00001});
         horizU.setAttribute("position",{x: 0, y: (height/2)-(newHeight/2), z: -0.00001});
         horizD.setAttribute("position",{x: 0, y: (-1*height/2)+(newHeight/2), z: -0.00001});
 
+        /* Sets color to be parent color */
         vertL.setAttribute("material", {shader: "flat", color: "rgb("+color.r.toString()+","+color.g.toString()+","+color.b.toString()+")"});
         vertR.setAttribute("material", {shader: "flat", color: "rgb("+color.r.toString()+","+color.g.toString()+","+color.b.toString()+")"});
         horizU.setAttribute("material", {shader: "flat", color: "rgb("+color.r.toString()+","+color.g.toString()+","+color.b.toString()+")"});
         horizD.setAttribute("material", {shader: "flat", color: "rgb("+color.r.toString()+","+color.g.toString()+","+color.b.toString()+")"});
 
+        /* Sets entity ids */
         vertL.setAttribute("id",parent.getAttribute("id")+"-0");
         vertR.setAttribute("id",parent.getAttribute("id")+"-1");
         horizU.setAttribute("id",parent.getAttribute("id")+"-2");
         horizD.setAttribute("id",parent.getAttribute("id")+"-3");
 
-
+        /* Adds entities to parent plane */
         parent.appendChild(vertL);
         parent.appendChild(vertR);
         parent.appendChild(horizU);
         parent.appendChild(horizD);
+        
 }
 
-function drawGradient(width,height,numBars,color,parent){
+/* draws gradient */
+function drawGradient(width,height,numBars,color1,color2,parent){
+    /* creates evenly spaced planes that progressively trend towards full color */
+    rDiff = color2.r-color1.r
+    gDiff = color2.g-color1.g
+    bDiff = color2.b-color1.b    
+    rStep = rDiff/(numBars-1)
+    gStep = gDiff/(numBars-1)
+    bStep = bDiff/(numBars-1)
+    var j = numBars-1;
+    while(j >= 0){
+        let elChild = document.createElement('a-entity'); // creates plane
+        elChild.setAttribute("id",parent.id+"-"+(numBars-j).toString()); // sets id correctly
+        elChild.setAttribute("geometry",{primitive: "plane", width: width, height: height}); // sets size
+        elChild.setAttribute("position",{x: width*numBars/2-(width*j)-(width/2), y: 0, z: 0}); // sets proper position
+        elChild.setAttribute("material",{shader: "flat", color: "rgb("+Math.ceil(color2.r-(rStep*j)).toString()+","+Math.ceil(color2.g-(gStep*j)).toString()+","+Math.floor(color2.b-(bStep*j)).toString()+")"}); // sets color
+        parent.appendChild(elChild); // adds entity to parent
+        j--;
+    }
+    
+    /*
     var j = 0;
     while(j < numBars){
-        let elChild = document.createElement('a-entity');
-        elChild.setAttribute("id",parent.id+"-"+(numBars-j).toString());
-        elChild.setAttribute("geometry",{primitive: "plane", width: width, height: height});
-        elChild.setAttribute("position",{x: width*numBars/2-(width*j)-(width/2), y: 0, z: 0});
-        elChild.setAttribute("material",{shader: "flat", color: "rgb("+Math.ceil(color.r-((color.r/numBars)*j)).toString()+","+Math.ceil(color.g-((color.g/numBars)*j)).toString()+","+Math.ceil(color.b-((color.b/numBars)*j)).toString()+")"});
-        parent.appendChild(elChild);
+
+        let elChild = document.createElement('a-entity'); // creates plane
+        elChild.setAttribute("id",parent.id+"-"+(numBars-j).toString()); // sets id correctly
+        elChild.setAttribute("geometry",{primitive: "plane", width: width, height: height}); // sets size
+        elChild.setAttribute("position",{x: width*numBars/2-(width*j)-(width/2), y: 0, z: 0}); // sets proper position
+        elChild.setAttribute("material",{shader: "flat", color: "rgb("+Math.ceil(color.r-((color.r/numBars)*j)).toString()+","+Math.ceil(color.g-((color.g/numBars)*j)).toString()+","+Math.ceil(color.b-((color.b/numBars)*j)).toString()+")"}); // sets color
+        parent.appendChild(elChild); // adds entity to parent
         j++;
-    }
+    }*/
 }
 
-function drawGrille(width,height,numBars,color,parent){
+/* draws grille */
+function drawGrille(width,height,numBars,color1, color2,parent){
+    /* creates evenly spaced planes that alternate between some color and black */
+
     var j = 0;
     var isBlack = false;
     while(j < numBars){
@@ -120,10 +162,10 @@ function drawGrille(width,height,numBars,color,parent){
         elChild.setAttribute("id",parent.id+"-"+(numBars-j).toString());
         elChild.setAttribute("geometry",{primitive: "plane", width: width, height: height});
         elChild.setAttribute("position",{x: width*numBars/2-(width*j)-(width/2), y: 0, z: 0});
-        if(isBlack){
-            elChild.setAttribute("material",{shader: "flat", color: "rgb(0,0,0)"});
+        if(isBlack){ // if on black bar
+            elChild.setAttribute("material",{shader: "flat", color: color2});
         } else {
-            elChild.setAttribute("material",{shader: "flat", color: "rgb("+color.r.toString()+","+color.g.toString()+","+color.b.toString()+")"});
+            elChild.setAttribute("material",{shader: "flat", color: color1});
         }
         isBlack = !isBlack;
         parent.appendChild(elChild);
@@ -131,7 +173,9 @@ function drawGrille(width,height,numBars,color,parent){
     }
 }
 
-function drawCheckerboard(rows,cols,size,color,parent){
+/* draws checkerboard */
+function drawCheckerboard(rows,cols,size,color1,color2,parent){
+    /* draws evenly spaced squares */
     var r = 0;
     var isBlack = false;
     while (r < rows){
@@ -144,9 +188,9 @@ function drawCheckerboard(rows,cols,size,color,parent){
             elChildCol.setAttribute("geometry",{primitive: "plane", width: size, height: size});
             elChildCol.setAttribute("position",{x: size*cols/2-(size*c)-(size/2), y: size*rows/2-(size*r)-(size/2), z: 0});
             if(isBlack){
-                elChildCol.setAttribute("material",{shader: "flat", color: "rgb(0,0,0)"});
+                elChildCol.setAttribute("material",{shader: "flat", color: color2});
             } else {
-                elChildCol.setAttribute("material",{shader: "flat", color: "rgb("+color.r.toString()+","+color.g.toString()+","+color.b.toString()+")"});
+                elChildCol.setAttribute("material",{shader: "flat", color: color1});
             }
             isBlack = !isBlack;
             elChildRow.appendChild(elChildCol)
@@ -158,179 +202,26 @@ function drawCheckerboard(rows,cols,size,color,parent){
     }
 }
 
-/* edits selected entity */
-function editEntity(){
-    /* universal changes */
-    if(isNaN(parseFloat($("#x").val())) || isNaN(parseFloat($("#y").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-    if(hexToRgb($("#color").val()) == null){
-        alert("Invalid color (check that the color was entered in hexadecimal format)");
-        return;
-    }
-    if(isNaN(parseFloat($("#rotation").val()))){
-        alert("Please enter a valid rotation");
-        return;
-    }
-    selectedEntity.setAttribute("angle",{x:-1*parseFloat($("#x").val()), y:-1*parseFloat($("#y").val())});
-    selectedEntity.setAttribute("position",{x: -250 * Math.sin((-parseFloat($("#x").val())*Math.PI)/180), y: parseFloat($("#y").val()), z: -250 * Math.cos((-parseFloat($("#x").val())*Math.PI)/180)+(0.0001*numAdded++)});
-    selectedEntity.setAttribute("rotation",{x: 0, y: -parseFloat($("#x").val()), z: parseFloat($("#rotation").val())});
-    selectedEntity.setAttribute("material",{shader: "flat", src: "#"+$("#texture").val(), color: $("#color").val()});
-
-    if(selectedEntity.getAttribute("id").includes("circle")){  /* circle only changes */
-        if(isNaN(parseFloat($("#radius").val()))){
-            alert("Please enter a valid radius");
-            return;
-        } else if(parseFloat($("#radius").val()) < 0){
-            alert("Please enter a valid radius");
-            return;
-        } else if(parseFloat($("#fill").val()) <= 0){
-            alert("Border too small (0 < border <= smallest dimension of entity)");
-            return;
-        } else if(parseFloat($("#radius").val()) < parseFloat($("#fill").val())){
-            alert("Border too large, will change size of entity (0 < border <= radius)")
-        }
-        /*selectedEntity.setAttribute("fill",{val: parseFloat($("#fill").val())});*/
-        /*selectedEntity.setAttribute("geometry",{primitive: "ring", radiusOuter: parseFloat($("#radius").val()), radiusInner: parseFloat($("#radius").val())*Math.sqrt((100-parseFloat($("#fill").val()))/100)});*/
-        selectedEntity.setAttribute("geometry",{primitive: "ring", radiusOuter: parseFloat($("#radius").val()), radiusInner: parseFloat($("#radius").val())-parseFloat($("#fill").val())});
-        selectedEntity.setAttribute("material",{shader: "flat", src: selectedEntity.getAttribute("material").src, color: $("#color").val()});
-    } else if (selectedEntity.getAttribute("id").includes("plane")){ /* plane only changes */
-        if(isNaN(parseFloat($("#width").val()))){
-            alert("Please enter a valid width");
-            return;
-        }
-        if(isNaN(parseFloat($("#height").val()))){
-            alert("Please enter a valid height");
-            return;
-        }
-        if(parseFloat($("#height").val()) < 0){
-            alert("Please enter a valid height ( >= 0 )");
-            return;
-        } else if(parseFloat($("#width").val()) < 0){
-            alert("Please enter a valid width ( >= 0 )");
-            return;
-        } else if(parseFloat($("#fill").val()) <= 0){
-            alert("Border too small (0 < border <= smallest dimension of entity)");
-            return;
-        } else if((parseFloat($("#width").val()) < parseFloat($("#fill").val())) && (parseFloat($("#width").val()) <= parseFloat($("#height").val())) || (parseFloat($("#height").val()) < parseFloat($("#fill").val())) && (parseFloat($("#width").val()) > parseFloat($("#height").val()))){
-            alert("Border too large, will change size of entity (0 < border <= smallest dimension of entity)");
-            return;
-        }
-        /*selectedEntity.setAttribute("fill",{val: parseFloat($("#fill").val())});*/
-        if (texture.value == "none"){
-            selectedEntity.setAttribute("geometry",{primitive: "plane", width: 0, height: parseFloat($("#height").val())});
-            let i = selectedEntity.children.length-1;
-            while (i >= 0) {
-                selectedEntity.children[i].parentNode.removeChild(selectedEntity.children[i]);
-                i--;
-            }
-            drawPlaneBorder(parseFloat($("#width").val()),parseFloat($("#height").val()),parseFloat($("#fill").val()),hexToRgb($("#color").val()),selectedEntity);
+/* updates the current json object for the active scene*/
+function updateJSON(){
+    const jsonData = {};
+    jsonData["sky"] = {skyColor: sky.getAttribute("material").color};
+    els.forEach(element => { 
+        if(element.id.includes("gradient") || element.id.includes("grille")){
+            jsonData[element.id] = {advanced: element.components.advanced.attrValue, angle: element.components.angle.attrValue, numBars: element.children.length, color2: element.components.color2.attrValue, childGeometry: element.children[0].components.geometry.attrValue, position: element.components.position.attrValue, material: element.components.material.attrValue, rotation: element.components.rotation.attrValue};
+        } else if(element.id.includes("checkerboard")){
+            jsonData[element.id] = {advanced: element.components.advanced.attrValue, angle: element.components.angle.attrValue, rows: element.children.length, cols: element.children[0].children.length, tileSize: element.children[0].children[0].components.geometry.attrValue.width,  color2: element.components.color2.attrValue, position: element.components.position.attrValue, material: element.components.material.attrValue, rotation: element.components.rotation.attrValue};
+        } else if(element.id.includes("plane")){
+            jsonData[element.id] = {advanced: element.components.advanced.attrValue, angle: element.components.angle.attrValue, widthReal: (element.children.length == 0 ? element.components.geometry.attrValue.width : element.children[2].components.geometry.attrValue.width),fill: element.components.fill.attrValue, geometry: element.components.geometry.attrValue, position: element.components.position.attrValue, material: element.components.material.attrValue, rotation: element.components.rotation.attrValue};
+        } else if(element.id.includes("circle")){
+            jsonData[element.id]={advanced: element.components.advanced.attrValue, angle: element.components.angle.attrValue, geometry: element.components.geometry.attrValue, fill: element.components.fill.attrValue, position: element.components.position.attrValue, material: element.components.material.attrValue, rotation: element.components.rotation.attrValue};
         } else {
-            let i = selectedEntity.children.length-1;
-            while (i >= 0) {
-                selectedEntity.children[i].parentNode.removeChild(selectedEntity.children[i]);
-                i--;
-            }
-            selectedEntity.setAttribute("geometry",{primitive: "plane", width: parseFloat($("#width").val()), height: parseFloat($("#height").val())});
-        }
-
-
-    } else if (selectedEntity.getAttribute("id").includes("triangle")){ /* triangle only changes */
-    if(isNaN(parseFloat($("#vax").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-    if(isNaN(parseFloat($("#vay").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-    if(isNaN(parseFloat($("#vbx").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-    if(isNaN(parseFloat($("#vby").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-    if(isNaN(parseFloat($("#vcx").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-    if(isNaN(parseFloat($("#vcy").val()))){
-        alert("Please enter a valid position");
-        return;
-    }
-        selectedEntity.setAttribute("geometry",{primitive: "triangle", vertexA: {x: parseFloat($("#vax").val()), y: parseFloat($("#vay").val()), z: 0},
-         vertexB: {x: parseFloat($("#vbx").val()), y: parseFloat($("#vby").val()), z: 0}, vertexC: {x: parseFloat($("#vcx").val()), y: parseFloat($("#vcy").val()), z: 0}});
-    } else if (selectedEntity.getAttribute("id").includes("gradient") || selectedEntity.getAttribute("id").includes("grille")){ /* gradient only changes */
-        if(isNaN(parseFloat($("#width").val()))){
-            alert("Please enter a valid width");
-            return;
-        }
-        if(isNaN(parseFloat($("#height").val()))){
-            alert("Please enter a valid height");
-            return;
-        }
-        if(isNaN(parseFloat($("#numBarsIn").val()))){
-            alert("Please enter a valid number of bars");
-            return;
-        }
-        if(parseFloat($("#height").val()) < 0){
-            alert("Please enter a valid height ( >= 0 )");
-            return;
-        } else if(parseFloat($("#width").val()) < 0){
-            alert("Please enter a valid width ( >= 0 )");
-            return;
-        } else if(parseFloat($("#numBarsIn").val()) < 0){
-            alert("Please enter a valid number of bars ( >= 0 )");
-            return;
-        }
-
-        let i = selectedEntity.children.length-1;
-        while (i >= 0) {
-            selectedEntity.children[i].parentNode.removeChild(selectedEntity.children[i]);
-            i--;
-        }
-        if (selectedEntity.getAttribute("id").includes("gradient")){
-            drawGradient(parseFloat($("#width").val()),parseFloat($("#height").val()),parseFloat($("#numBarsIn").val()),hexToRgb($("#color").val()),selectedEntity);
-        } else {
-            drawGrille(parseFloat($("#width").val()),parseFloat($("#height").val()),parseFloat($("#numBarsIn").val()),hexToRgb($("#color").val()),selectedEntity);
-        }
-        
-    } else if (selectedEntity.getAttribute("id").includes("checkerboard")){ /* checkerboard only changes */
-        if(isNaN(parseFloat($("#rowsIn").val()))){
-            alert("Please enter a valid number of rows");
-            return;
-        }
-        if(isNaN(parseFloat($("#colsIn").val()))){
-            alert("Please enter a valid number of columns");
-            return;
-        }
-        if(isNaN(parseFloat($("#tileSizeIn").val()))){
-            alert("Please enter a valid size");
-            return;
-        }
-        if(parseFloat($("#rowsIn").val()) < 0){
-            alert("Please enter a valid height ( >= 0 )");
-            return;
-        } else if(parseFloat($("#colsIn").val()) < 0){
-            alert("Please enter a valid width ( >= 0 )");
-            return;
-        } else if(parseFloat($("#tileSizeIn").val()) < 0){
-            alert("Please enter a valid number of bars ( >= 0 )");
-            return;
-        }
-        let i = selectedEntity.children.length-1;
-        while (i >= 0) {
-            selectedEntity.children[i].parentNode.removeChild(selectedEntity.children[i]);
-            i--;
-        }
-        drawCheckerboard(parseFloat($("#rowsIn").val()),parseFloat($("#colsIn").val()),parseFloat($("#tileSizeIn").val()),hexToRgb($("#color").val()),selectedEntity);
-    } 
-
+            jsonData[element.id]={advanced: element.components.advanced.attrValue, angle: element.components.angle.attrValue, geometry: element.components.geometry.attrValue, position: element.components.position.attrValue, material: element.components.material.attrValue, rotation: element.components.rotation.attrValue};
+        }});
+        scenes[patternDisplay.value] = jsonData
 }
 
+/* converts hex to RGB values */
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
