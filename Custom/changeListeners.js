@@ -263,6 +263,54 @@ $("#tileSizeIn").change(function() {
     editEntity();
   });
 
+  /* If the textbox for size of tiles is changed */
+$("#circleSizeIn").change(function() {
+    editEntity();
+  });
+
+  /* If the textbox for size of tiles is changed */
+$("#spacingIn").change(function() {
+    editEntity();
+  });
+
+/* If the textbox for size of tiles is changed */
+$("#numDotsIn").change(function() {
+    editEntity();
+  });
+
+  /* If the textbox for size of tiles is changed */
+$("#numCirclesIn").change(function() {
+    editEntity();
+  });
+
+  /* If the textbox for size of tiles is changed */
+$("#arraySpacingIn").change(function() {
+    editEntity();
+  });
+
+  /* If the textbox for size of tiles is changed */
+$("#numRingsIn").change(function() {
+    editEntity();
+  });
+
+  /* If the textbox for size of tiles is changed */
+$("#ringSpacingIn").change(function() {
+    editEntity();
+  });
+
+  /* If the textbox for size of tiles is changed */
+$("#ringThicknessIn").change(function() {
+    editEntity();
+  });
+
+$("#toggleCenterDotIn").change(function() {
+    editEntity();
+});
+
+$("#ringPitchIn").change(function() {
+    editEntity();
+});
+
 /* sends entity back or forward one layer */
 /*function sendBack(isback){
     let tmp = null;
@@ -325,61 +373,108 @@ window.addEventListener("pointerup", function(e) {
 });*/
 
 
-var scenes = {default: {sky: {skyColor: '#000000'}}}
 finished = false
 var ind = 0
 var block = false
+var fileName;
+var myLoop;
+var test;
 /* if JSON is uploaded */
 scene_display_input.addEventListener("change", function() {
 
-    var myLoop = slowLoop(scene_display_input.files, (itm, idx, cb)=>{
-    
+    myLoop = slowLoop(scene_display_input.files, (itm, idx, cb)=>{
+        test = itm;
         setTimeout(()=>{
             const reader = new FileReader();
-            reader.addEventListener("load", () => {
+            /*reader.addEventListener("load", () => {
 
                 fileContent = JSON.parse(reader.result);
-                let arr = Object.keys(fileContent['scenes'])
-                let i = 0;
-                while(i < arr.length){
-                    if(Object.keys(scenes).indexOf(arr[i]) != -1){
-                        scenes[arr[i]+"1"] = fileContent['scenes'][arr[i]]
-                    } else {
-                        scenes[arr[i]] = fileContent['scenes'][arr[i]]
-                    }
-                    
-                    i++;
-                }
+                scenes[fileName] = fileContent['scenes']
                 textures = fileContent['textures']['textureValues']
                 uploadedTextureFormats = fileContent['textures']['uploadedTextureFormats']
                 cb();
+            });*/
+
+            reader.onload = function() {
+                fileContent = JSON.parse(reader.result);
+                names[fileName] = ""
+                for (const [name, value] of Object.entries(fileContent['scenes'])) {
+                    const re = /^[a-zA-Z0-9-_ ]+( \([0-9]+\))?$/
+                    if(!re.test(name)){
+                        alert('Pattern name is invalid. '+name+' Limit names to only alphanumerics, -, _, or spaces.')
+                        delete names[fileName]
+                        return
+                    }
+                    currName = name.split(' (')[0];
+                    if(names[fileName][currName]){
+                        currName = currName + ' ('+names[fileName][currName]+')'
+                        names[fileName][name.split(' (')[0]] = names[fileName][name.split(' (')[0]] + 1
+                    } else {
+                        names[fileName][currName] = 1
+                    }
+                  }
+                packageSelect.options.add(new Option(fileName,fileName))
+                scenes[fileName] = fileContent['scenes']
+                names[fileName] = {}
+                /*Object.keys(fileContent['scenes']).forEach( currName => {
+                    if(names[fileName] == null){
+                        names[fileName][currName] = names[fileName][currName] + 1
+                    } else {
+                        names[fileName][currName] = 1
+                    }
+                });*/
+                textures = fileContent['textures']['textureValues']
+                uploadedTextureFormats = fileContent['textures']['uploadedTextureFormats']
+                cb();
+            };
+
+            reader.onabort = function() {
+                console.log('aborted')
+                return false;
+            };
+            reader.addEventListener("error", (event) => {
+                console.log('error:')
+                console.log(event.currentTarget.error)
             });
+
             if(itm.name.split(".")[1] != "JSON"){
                 alert("Invalid file type");
                 scene_display_input.value = ""
-                return;
+                return false;
             }
             if(Object.keys(scenes).indexOf(itm.name.split(".")[0]) != -1){
                 itm.name = itm.name.split(".")[0]+"1"+itm.name.split(".")[1]
-                console.log(itm)
+                fileName = itm.name;
 
             }
+            fileName = itm.name.split(".")[0];
+            const re = /^[a-zA-Z0-9-_ ]+$/
+            if(!re.test(itm.name.split(".")[0])){
+                alert('Package name is invalid. '+fileName+' Limit names to only alphanumerics, -, _, or spaces.')
+                return false;
+            }
+            if(scenes[fileName] != null){
+                alert('A package with this name already exists');
+                return false;
+            }
             reader.readAsText(itm);
-            
-
+            console.log(fileName)
             
             
             // call cb when finished
-            
             
         }, 100);
         
     });
     
+    myLoop.catch(() => {
+        //console.log('error')
+    })
     // when it's done....
     myLoop.then(()=>{
-        console.log('no')
-        patternList.innerHTML = ''
+        //patternList.innerHTML = ''
+        console.log('then');
+        packages[fileName] = ''
         let arr = Object.keys(scenes)
         let len = arr.length
         let i = 0;
@@ -396,7 +491,6 @@ scene_display_input.addEventListener("change", function() {
             i++;
         }
         newTextures = [...new Set([...uploadedTextures,...currTextures])]
-        console.log(newTextures)
         newTextures.forEach(text => {
             var option = document.createElement("option"); 
             if(uploadedTextures.indexOf(text) != -1 && currTextures.indexOf(text) == -1){
@@ -410,7 +504,6 @@ scene_display_input.addEventListener("change", function() {
 
     
         newUploadedTextureFormat = [...new Set([...Object.keys(uploadedTextureFormat),...Object.keys(uploadedTextureFormats)])]
-        console.log(newUploadedTextureFormat)
         tmp = {}
         newUploadedTextureFormat.forEach(texture => {
             if(Object.keys(uploadedTextureFormat).indexOf(texture) != -1){
@@ -420,8 +513,13 @@ scene_display_input.addEventListener("change", function() {
             }
         });
         uploadedTextureFormat = tmp
-
+        flag = false;
         i = 0;
+    
+        
+        packageSelect.value = fileName
+        changePackage()
+        /*i = 0;
         while(i < len){
             var toggle_button = '<p><input type="checkbox" id="'+arr[i]+'" name="'+arr[i]+'" onclick="handlePatternSelect(this)"'
             let res = Array.from(patternDisplay.children).reduce(function(acc, x) {
@@ -438,7 +536,7 @@ scene_display_input.addEventListener("change", function() {
             $('#patternList').append(toggle_button)
             //pattern.options.add(new Option(arr[i], arr[i]))
             i++
-        }
+        }*/
 
     
     });
@@ -468,3 +566,88 @@ function slowLoop(items, loopBody) {
 }
     
 });
+
+keysPressed = {ctrl: false, x: false, c: false, v: false, i: false}
+
+/* listens for key presses to change pattern */
+document.addEventListener('keyup', (e) => {
+    if (e.code === "ArrowUp"){
+        if( boolAddEdit == false  || block == false){
+            if(isNaN(parseInt(patternList.getAttribute('selectedIndex')))){
+                return
+            }
+            if(parseInt(patternList.getAttribute('selectedIndex')) == 0){
+                patternList.children[patternList.children.length-1].dispatchEvent(new Event('click',{target: patternList.children[parseInt(patternList.getAttribute('selectedIndex'))+1]}));
+            } else {
+                patternList.children[parseInt(patternList.getAttribute('selectedIndex'))-1].dispatchEvent(new Event('click',{target: patternList.children[parseInt(patternList.getAttribute('selectedIndex'))+1]}));
+            }
+            
+        }
+    } else if (e.code === "ArrowDown"){
+        if( boolAddEdit == false  || block == false){
+            if(isNaN(parseInt(patternList.getAttribute('selectedIndex')))){
+                return
+            }
+            if(parseInt(patternList.getAttribute('selectedIndex')) == patternList.children.length-1){
+                patternList.children[0].dispatchEvent(new Event('click',{target: patternList.children[parseInt(patternList.getAttribute('selectedIndex'))+1]}));
+            } else {
+                patternList.children[parseInt(patternList.getAttribute('selectedIndex'))+1].dispatchEvent(new Event('click',{target: patternList.children[parseInt(patternList.getAttribute('selectedIndex'))+1]}));
+            }
+            
+        }
+    } else if (e.key === "Control"){
+        keysPressed["ctrl"] = false;
+    } else if(e.code === "KeyC"){
+        keysPressed["c"] = false;
+    } else if(e.code === "KeyX"){
+        keysPressed["x"] = false;
+    } else if(e.code === "KeyV"){
+        keysPressed["v"] = false;
+    } else if(e.code === "KeyI"){
+        keysPressed["i"] = false;
+    }
+  });
+
+/* listens for key presses to change pattern */
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Control"){
+        keysPressed["ctrl"] = true;
+        if(keysPressed["c"]){
+            // copy
+            copyPattern();
+        } else if(keysPressed["x"]){
+            // cut
+            cutPattern();
+
+        } else if(keysPressed["v"]){
+            // paste
+            pastePattern();
+        } else if(keysPressed["i"]){
+            document.querySelector("#debug").style.display == 'block' ? document.querySelector("#debug").style.display = 'none' : document.querySelector("#debug").style.display = 'block'
+        }
+    } else if(e.code === "KeyC"){
+        keysPressed["c"] = true;
+        if(keysPressed["ctrl"]){
+            // copy
+            copyPattern();
+        }
+    } else if(e.code === "KeyX"){
+        keysPressed["x"] = true;
+        if(keysPressed["ctrl"]){
+            // cut
+            cutPattern();
+        }
+    } else if(e.code === "KeyV"){
+        keysPressed["v"] = true;
+        if(keysPressed["ctrl"]){
+            // paste
+            pastePattern();
+        }
+    } else if(e.code === "KeyI"){
+        keysPressed["i"] = true;
+        if(keysPressed["ctrl"]){
+            // paste
+            document.querySelector("#debug").style.display == 'block' ? document.querySelector("#debug").style.display = 'none' : document.querySelector("#debug").style.display = 'block'
+        }
+    }
+  });  

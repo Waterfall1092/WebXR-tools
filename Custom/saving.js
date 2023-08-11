@@ -20,32 +20,48 @@ function saveScene(){
     data['scenes'][patternDisplay.value] = scenes[[patternDisplay.value]]
     // add current date
     data['date'] = new Date().toLocaleString();
-    var blob = new Blob([JSON.stringify(data, null, '\t')], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, patternDisplay.value+".JSON"); // save object as JSON file
+    download(data,patternDisplay.value+".JSON","text/plain;charset=utf-8")
 }
 
 /* saves package of scenes in JSON format */
 function saveSelected(){
+    let useTextures = confirm("Include textures?")
     let data = {scenes: {}, textures: {uploadedTextureFormats: {}, textureValues: []}, date: ""}
     let i = 0;
-    let len = patternDisplay.options.length
     textures = []
     // get all textures
     while(i < texture.options.length){
         textures.push({val: texture.options[i].value, text: texture.options[i].text});
         i++;
     }
-    // get all scenes
-    i = 0;
-    while(i < len){
-        data['scenes'][patternDisplay.options[i].text] = scenes[[patternDisplay.options[i].text]]
-        i++;
-    }
     // add textures
-    data['textures']['textureValues'] = textures
-    data['textures']['uploadedTextureFormats'] = uploadedTextureFormat
+    if(useTextures){
+        data['textures']['textureValues'] = textures
+        data['textures']['uploadedTextureFormats'] = uploadedTextureFormat
+    } else {
+        console.log('made it')
+        for (const pattern of Object.keys(scenes[packageSelect.value])){
+            for (const ent of Object.keys(scenes[packageSelect.value][pattern])){
+                if(ent.includes('plane')){
+                    scenes[packageSelect.value][pattern][ent].material = {shader: scenes[packageSelect.value][pattern][ent].material.shader, color: scenes[packageSelect.value][pattern][ent].material.color, src: ''}
+                }
+            }
+        }
+    }
+
+    // get all scenes
+    data['scenes'] = scenes[packageSelect.value]
+
     // add date
     data['date'] = new Date().toLocaleString();
-    var blob = new Blob([JSON.stringify(data, null, '\t')], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "pattern_package.JSON"); // save object as JSON file
+    download(data,packageSelect.value+".JSON","text/plain;charset=utf-8");
+    pastebinPost(useTextures)
+}
+
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([JSON.stringify(content, null, '\t')], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
 }

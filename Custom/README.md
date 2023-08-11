@@ -1,23 +1,69 @@
-# Directions For Use: #
-## Summary
+# Pattern Generation Tool #
 The Pattern Generation Tool provides a user interface for creating, editing, and displaying [WebXR](https://immersiveweb.dev/) scenes.  
 Scenes consist of 2 and 3 dimensional entities taken from [A-Frame](https://aframe.io/docs/1.4.0/core/entity.html).  
-These entities can be manipulated in a variety of different ways to create flexible patterns.  
+These entities can be manipulated in a variety of different ways to create flexible patterns. 
+Scenes are grouped together in packages that can be downloaded and shared.
 
-## Features
-- Scenes can be downloaded and uploaded in collections or by themselves.  
-- Scenes that are uploaded can still be edited and saved like normal.  
-- Scenes can be switched between using arrow keys or when in immersive mode, the buttons on the left and right controllers.  
+### Features
+- Create packages of scenes that can be shared via a file or a link.
+- Order of scenes within the package can be easily changed.
+- Scenes are fully editable upon uploading or downloading.  
+- Scenes can be switched between using arrow keys or when in immersive mode, the buttons on the left and right controllers.
+- Default package available containing commonly used patterns:
+   - Red: A solid red background
+   - Green: A solid green background
+   - Blue: A solid blue background
+   - White: A solid white background
+   - Grille: A black and white background
+   - Crosshair: A white crosshair
+   - Line: A white vertical line
+   - Dot Array: A matrix of dots
+   - Circular Dot Array: A dot array arranged in a circle
+   - Checkerboard_w: A checkerboard with a white center tile
+   - Checkerboard_b: A checkerboard with a black center tile
+   - Ring_w1: A bullseye with a high pitch
+   - Ring_w2: A bullseye with a medium pitch
+   - Ring_w5: A bullseye with a low pitch
+
+
+# Directions For Use #
+### Packages
+1. [Create a Package](#createPackage)
+2. Edit a Package
+3. Display a Package
+4. Save a Package
+5. Share a Package
+
+### Patterns
+1. Create a Pattern
+2. Edit a Pattern
+3. Display a Pattern
+4. Save a Pattern
+5. Share a Pattern
+
+
+<div id='createPackage'/>
+## Create a Package
+
+## Edit a Package
+
+## Display a Package
+
+## Save a Package
+
+## Share a Package
+
+
+
+
+
+
+
+
 
 ## Displaying Patterns
 
-### Provided Patterns
-- Default: A blank pattern that can be quickly edited
-- Red: A solid red background
-- Green: A solid green background
-- Blue: A solid blue background
-- White: A solid white background
-- Grille Pattern: A black and white background
+
 
 ### Selecting a Pattern
 To select a pattern, first ensure that the checkbox for the pattern under ***Pattern List*** has been checked. Then select the desired pattern from the ***Pattern Display*** dropdown. 
@@ -185,17 +231,15 @@ If you would like to inspect the HTML or JavaScript data of the selected entity:
    
    
 ## JSON File Format
-```
 {  
-   "scenes": 
-      { map of scenes },  
-   "textures": {  
-      "uploadedTextureFormats":  
-         { map of image sizes for uploaded textures },  
-      "textureValues":  
-         [ list of textures associated with patterns being saved ],  
-   },  
-   "date": "datetime of save"  
-}
-```
+&nbsp;&nbsp;"scenes":   
+&nbsp;&nbsp;&nbsp;&nbsp;{ map of scenes },  
+&nbsp;&nbsp;   "textures": {  
+&nbsp;&nbsp;&nbsp;&nbsp;      "uploadedTextureFormats":  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ map of image sizes for uploaded textures },  
+&nbsp;&nbsp;&nbsp;&nbsp;      "textureValues":  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ list of textures associated with patterns being saved],  
+&nbsp;&nbsp;   }  
+&nbsp;&nbsp;   "date": "datetime of save"  
+}  
    
