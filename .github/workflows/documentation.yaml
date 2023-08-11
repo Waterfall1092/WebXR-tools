@@ -19,7 +19,6 @@ jobs:
     # ===============================
     - name: Commit documentation changes
       run: |
-        mkdir -p gh-pages
         git clone https://github.com/DIDSR/WebXR-tools.git --branch gh-pages --single-branch gh-pages
         mkdir -p gh-pages/Custom/doc
         cp -r doc/_build/html/* gh-pages/Custom/doc
