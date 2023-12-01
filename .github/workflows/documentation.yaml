@@ -31,8 +31,6 @@ jobs:
         cp -r Custom/* gh-pages/Custom
         mkdir -p  gh-pages/Images
         cp -r Images/* gh-pages/Images
-        mkdir -p  gh-pages/TCA
-        cp -r TCA/* gh-pages/TCA
         mkdir -p  gh-pages/lib
         cp -r lib/* gh-pages/lib
         cd gh-pages
