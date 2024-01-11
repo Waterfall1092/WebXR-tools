@@ -13,7 +13,7 @@ tags:
 authors:
   - name: Brendan Collins
     orcid: 0000-0002-1529-5900
-    affiliation: "1, 2, 3"
+    affiliation: "1, 2"
   - name: Ryan Beams
     orcid: 0000-0003-2592-6064
     affiliation: 1
@@ -21,12 +21,10 @@ authors:
     orcid: 0000-0002-7829-9570
     affiliation: 1
 affiliations:
- - name: Center for Devices and Radiological Health, U.S. Food and Drug Administration
+ - name: Division of Imaging, Diagnostics and Software Reliability, Office of Science and Engineering Laboratories, Center for Devices and Radiological Health, U. S. Food and Drug Administration, Silver Spring, MD, United States
    index: 1
- - name: ORISE Fellow, Oak Ridge Institute for Science and Research
+ - name: Department of Computer Science, University of Maryland, College Park, MD, United States
    index: 2
- - name: Department of Computer Science, University of Maryland - College Park
-   index: 3
 date: 11 August 2023
 bibliography: paper.bib
 
