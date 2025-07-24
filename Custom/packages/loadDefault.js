@@ -29,3 +29,5 @@ scenes['default']['ring_w2'] = ring_w2['scenes']['ring_w2']
 scenes['default']['ring_w5'] = ring_w5['scenes']['ring_w5']
 
 scenes['default']['Flying Spot'] = flying_spot['scenes']['Flying Spot']
+
+scenes['default']['dist_cell'] = dist_cell['scenes']['dist_cell']
