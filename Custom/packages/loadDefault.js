@@ -30,12 +30,12 @@ scenes['default']['ring_w5'] = ring_w5['scenes']['ring_w5']
 
 scenes['default']['Flying Spot'] = flying_spot['scenes']['Flying Spot']
 
-scenes['default']['checker_w_cw'] = dist_cell['scenes']['checker_w_cw']
+scenes['default']['checker_w_cw'] = checker_w_cw['scenes']['checker_w_cw']
 
-scenes['default']['checker_w_cb'] = dist_cell['scenes']['checker_w_cb']
+scenes['default']['checker_w_cb'] = checker_w_cb['scenes']['checker_w_cb']
 
-scenes['default']['CTF_H_1'] = dist_cell['scenes']['CTF_H_1']
+scenes['default']['CTF_H_1'] = CTF_H_1['scenes']['CTF_H_1']
 
-scenes['default']['CTF_V_1'] = dist_cell['scenes']['CTF_V_1']
+scenes['default']['CTF_V_1'] = CTF_V_1['scenes']['CTF_V_1']
 
 scenes['default']['dist_cell'] = dist_cell['scenes']['dist_cell']
