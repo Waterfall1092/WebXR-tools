@@ -13,13 +13,13 @@ var CTF_V_1 = {
 					"z": -250
 				},
 				"numBars": 500,
-				"color2": {
-					"val": "#000000"
-				},
-				"childGeometry": {
+                "childGeometry": {
 					"primitive": "plane",
 					"width": 1,
 					"height": 500
+				},
+				"color2": {
+					"val": "#000000"
 				},
 				"position": {
 					"x": 0,
@@ -29,7 +29,6 @@ var CTF_V_1 = {
 				"material": {
 					"shader": "flat",
 					"color": "#ffffff",
-					"src": ""
 				},
 				"rotation": {
 					"x": 0,
@@ -59,5 +58,42 @@ var CTF_V_1 = {
 				}
 			}
 		}
-	}
+	},
+    "textures": {
+		"uploadedTextureFormats": {},
+		"textureValues": [
+			{
+				"val": "none",
+				"text": "none"
+			},
+			{
+				"val": "QC",
+				"text": "TG18-QC.2k_12b"
+			},
+			{
+				"val": "CH",
+				"text": "TG18-CH.2k"
+			},
+			{
+				"val": "MM1",
+				"text": "TG18-MM1.2k"
+			},
+			{
+				"val": "MM2",
+				"text": "TG18-MM2.2k"
+			},
+			{
+				"val": "sQC",
+				"text": "TG270sQC"
+			},
+			{
+				"val": "PQC",
+				"text": "TG18-PQC.2k_12b"
+			},
+			{
+				"val": "BR",
+				"text": "TG18-BR.2k_12b"
+			}
+		]
+	},
 }
