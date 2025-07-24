@@ -12,15 +12,15 @@ var crosshair = {
 					"x": 0,
 					"z": -250
 				},
-				"widthReal": 1,
+				"widthReal": 0.5,
 				"fill": {
-					"val": 1,
+					"val": 0.5,
 					"isFull": true
 				},
 				"geometry": {
 					"primitive": "plane",
 					"width": 0,
-					"height": 15
+					"height": 50
 				},
 				"position": {
 					"x": 0,
@@ -59,15 +59,15 @@ var crosshair = {
 					"x": 0,
 					"z": -250
 				},
-				"widthReal": 1,
+				"widthReal": 0.5,
 				"fill": {
-					"val": 1,
+					"val": 0.5,
 					"isFull": true
 				},
 				"geometry": {
 					"primitive": "plane",
 					"width": 0,
-					"height": 15
+					"height": 50
 				},
 				"position": {
 					"x": 0,
