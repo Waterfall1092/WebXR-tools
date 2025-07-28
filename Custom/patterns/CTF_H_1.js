@@ -15,7 +15,7 @@ var CTF_H_1 = {
 				"numBars": 500,
                 "childGeometry": {
 					"primitive": "plane",
-					"width": 0.5,
+					"width": 2,
 					"height": 500
 								},
 				"color2": {
